@@ -2,6 +2,63 @@
 
 ![Readme Card](https://github-readme-stats.vercel.app/api/pin/?username=Lateralus138&repo=Windows-GetLastError-Messages)
 
+- [Windows GetLastError Messages](#windows-getlasterror-messages)
+  - [Generation Code](#generation-code)
+  - [Error list](#error-list)
+    - [0x00000000 - 0x00003FFF (0 - 16383)](#0x00000000---0x00003fff-0---16383)
+
+
+---
+
+## Generation Code
+
+List generated in ***C++*** with:
+
+```CPP
+#include <Windows.h>
+#include <iostream>
+#include <string>
+std::string GetLastErrorAsString()
+{
+  DWORD errorId = ::GetLastError();
+  if (errorId == 0)
+  {
+    return std::string();
+  }
+  LPSTR buffer = nullptr;
+  size_t messageSize =
+    FormatMessageA
+    (
+      FORMAT_MESSAGE_ALLOCATE_BUFFER |
+        FORMAT_MESSAGE_FROM_SYSTEM |
+        FORMAT_MESSAGE_IGNORE_INSERTS,
+      NULL, errorId,
+      MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+      (LPSTR)&buffer, 0, NULL
+    );
+  std::string message(buffer, messageSize);
+  LocalFree(buffer);
+  return message;
+}
+int main()
+{
+  for (DWORD index = 0x0000; index < 0x3FFF; index++)
+  {
+    SetLastError(index);
+    std::string em = GetLastErrorAsString();
+    if (!em.empty())
+    {
+      std::string message = std::to_string(i);
+      message.append(". ");
+      message.append(em);
+      message.pop_back();
+      std::cout << message;
+    }
+  }
+}
+```
+---
+
 ## Error list
 
 ### 0x00000000 - 0x00003FFF (0 - 16383)
